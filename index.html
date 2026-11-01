@@ -86,6 +86,16 @@ button.ghost{font:inherit;border:1px solid var(--line);background:transparent;co
 .cat b{font-family:"Noto Serif TC",serif;color:var(--accent);font-size:17px}
 .cat p{margin:0}
 .note{font-size:13px;color:var(--muted);text-align:center;margin-top:16px}
+.modes{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:18px}
+.mode-btn{font:inherit;color:var(--ink);text-align:center;cursor:pointer;background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:12px;min-height:76px}
+.mode-btn b{display:block;font-family:"Noto Serif TC",serif;font-size:17px}
+.mode-btn span{display:block;font-size:12.5px;color:var(--muted);line-height:1.45}
+.mode-btn[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.mode-btn[aria-pressed="true"] span{color:inherit;opacity:.85}
+.mode-btn:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.switch{font:inherit;font-weight:700;width:100%;min-height:48px;margin-top:18px;cursor:pointer;color:var(--accent);background:var(--paper);border:1px solid var(--accent);border-radius:12px}
+.switch:disabled{opacity:.55;cursor:wait}
+.pillar .hg{font-size:11.5px;color:var(--muted);margin-top:2px}
 .luck{margin-top:8px;padding:16px 18px;border-radius:12px;background:var(--gold-soft)}
 .luck h3{font-family:"Noto Serif TC",serif;font-size:17px;margin:0 0 10px;color:var(--accent)}
 .luck dl{display:grid;grid-template-columns:5.5em 1fr;gap:8px 12px;margin:0}
@@ -138,9 +148,14 @@ a.btn.ghost{border:1px solid var(--line);color:var(--ink);flex:none;font-size:14
     </div>
   </header>
 
+  <div class="modes no-print" role="group" aria-label="選擇查詢項目">
+    <button type="button" class="mode-btn" data-mode="month" aria-pressed="true"><b>本月流月運勢</b><span>事業、財運、感情、健康與開運提醒</span></button>
+    <button type="button" class="mode-btn" data-mode="chart" aria-pressed="false"><b>個人命盤</b><span>排出四柱八字，看看你的性格</span></button>
+  </div>
+
   <form class="card no-print" id="form" novalidate>
     <h2>輸入你的生辰</h2>
-    <p class="hint">本站僅提供「當月」流月運勢；每月節氣交替後即可查詢新的月份。</p>
+    <p class="hint" id="formHint"></p>
     <div class="grid">
       <label class="f">姓名（選填）
         <input type="text" name="name" maxlength="20" autocomplete="name">
@@ -152,11 +167,11 @@ a.btn.ghost{border:1px solid var(--line);color:var(--ink);flex:none;font-size:14
           <label><input type="radio" name="gender" value="女"><span>女</span></label>
         </div>
       </div>
-      <label class="f">國曆出生年月日 <em>*</em>
+      <label class="f"><span>國曆出生年月日 <em>*</em></span>
         <input type="text" name="date" placeholder="YYYY/MM/DD　例：1990/05/15" inputmode="numeric" maxlength="10"
                autocomplete="bday" pattern="\d{4}/\d{2}/\d{2}" required>
       </label>
-      <label class="f">出生時辰 <em>*</em>
+      <label class="f"><span>出生時辰 <em>*</em></span>
         <select name="hour" required>
           <option value="" selected disabled>請選擇時辰</option>
           <option value="unknown">不知道時辰</option>
@@ -177,10 +192,10 @@ a.btn.ghost{border:1px solid var(--line);color:var(--ink);flex:none;font-size:14
       </label>
       <p class="privacy full">台灣於 1945–1979 年間部分年份實施夏令時間，若出生於該期間，請先將出生時間減 1 小時再選時辰。</p>
       <label class="chk full"><input type="checkbox" name="consent">
-        我同意緣來Ru's 命理工作室蒐集上述生辰，僅用於流月運勢分析，不提供給第三方。</label>
+        <span>我同意緣來Ru's 命理工作室蒐集上述生辰，僅用於<span id="consentUse">流月運勢</span>分析，不提供給第三方。</span></label>
     </div>
     <p class="err" id="err" role="alert"></p>
-    <button class="primary" id="submit" type="submit">查看本月運勢</button>
+    <button class="primary" id="submit" type="submit"></button>
   </form>
 
   <section id="result" hidden>
@@ -198,7 +213,18 @@ a.btn.ghost{border:1px solid var(--line);color:var(--ink);flex:none;font-size:14
       <div class="wxbar" id="wxbar"></div>
     </div>
 
-    <div class="card">
+    <div class="card" id="chartCard" hidden>
+      <div class="fortune-top">
+        <div class="ss">你的性格</div>
+        <div class="gz" id="pTitle"></div>
+      </div>
+      <div class="cat"><b>性格優點</b><p id="pGood"></p></div>
+      <div class="cat"><b>留意之處</b><p id="pCare"></p></div>
+      <div class="cat"><b>命盤特質</b><p id="pTrait"></p></div>
+      <p class="note">以上是依緣來Ru's工作室盤論推算，僅供參考。</p>
+    </div>
+
+    <div class="card" id="fortuneCard">
       <div class="fortune-top">
         <div class="ss" id="fMonth"></div>
         <div class="gz" id="fGz"></div>
@@ -219,6 +245,8 @@ a.btn.ghost{border:1px solid var(--line);color:var(--ink);flex:none;font-size:14
       </div>
       <p class="note">以上是依緣來Ru's工作室盤論推算，僅供參考。</p>
     </div>
+
+    <button class="switch no-print" id="switchMode" type="button"></button>
 
     <div class="card promo">
       <h2>想看完整的流年運勢？</h2>
@@ -305,7 +333,47 @@ function parseDate(s) {
   return dt.getUTCMonth() === mo - 1 && dt.getUTCDate() === d ? `${m[1]}-${m[2]}-${m[3]}` : null;
 }
 
-$("#form").addEventListener("submit", async e => {
+// 兩種查詢項目：本月流月運勢、個人命盤
+const MODES = {
+  month: { hint: "本站僅提供「當月」流月運勢；每月節氣交替後即可查詢新的月份。", button: "查看本月運勢", consent: "流月運勢", other: "chart", switchTo: "也看看我的個人命盤與性格" },
+  chart: { hint: "排出你的四柱八字，簡單看看與生俱來的性格。", button: "查看個人命盤", consent: "個人命盤", other: "month", switchTo: "也看看我的本月流月運勢" }
+};
+let mode = "month", lastBody = null;
+function setMode(next) {
+  mode = next;
+  const c = MODES[mode];
+  document.querySelectorAll(".mode-btn").forEach(b => b.setAttribute("aria-pressed", b.dataset.mode === mode));
+  $("#formHint").textContent = c.hint;
+  $("#submit").textContent = c.button;
+  $("#consentUse").textContent = c.consent;
+  $("#monthBadge").hidden = mode !== "month";
+}
+setMode("month");
+document.querySelectorAll(".mode-btn").forEach(b => b.addEventListener("click", () => {
+  setMode(b.dataset.mode);
+  $("#result").hidden = true; $("#form").hidden = false; $("#err").textContent = "";
+}));
+
+async function query(body) {
+  const err = $("#err"), btn = $("#submit"), sw = $("#switchMode");
+  err.textContent = "";
+  btn.disabled = sw.disabled = true; btn.textContent = "排盤中…";
+  try {
+    render(await api.fortune({ ...body, mode }));
+    lastBody = body;
+  } catch (ex) {
+    err.textContent = ex.message || "連線失敗，請稍後再試";
+    $("#result").hidden = true; $("#form").hidden = false;
+  } finally {
+    btn.disabled = sw.disabled = false; btn.textContent = MODES[mode].button;
+  }
+}
+$("#switchMode").addEventListener("click", () => {
+  setMode(MODES[mode].other);
+  query(lastBody);
+});
+
+$("#form").addEventListener("submit", e => {
   e.preventDefault();
   const f = new FormData(e.target), err = $("#err");
   const hour = f.get("hour") || "";
@@ -317,15 +385,7 @@ $("#form").addEventListener("submit", async e => {
   if (!body.date) return err.textContent = "請依 YYYY/MM/DD 格式輸入正確的出生年月日，例如 1990/05/15";
   if (!hour) return err.textContent = "請選擇出生時辰（不清楚可選「不知道時辰」）";
   if (!body.consent) return err.textContent = "請勾選同意聲明";
-  err.textContent = "";
-  const btn = $("#submit"); btn.disabled = true; btn.textContent = "排盤中…";
-  try {
-    render(await api.fortune(body));
-  } catch (ex) {
-    err.textContent = ex.message || "連線失敗，請稍後再試";
-  } finally {
-    btn.disabled = false; btn.textContent = "查看本月運勢";
-  }
+  query(body);
 });
 
 function render(r) {
@@ -334,15 +394,33 @@ function render(r) {
   $("#rLunar").textContent = `農曆 ${r.birth.lunar}`;
   const pl = $("#pillars"); pl.style.setProperty("--n", r.pillars.length);
   pl.innerHTML = r.pillars.map(p => `<div class="pillar"><div class="t">${p.title}</div><div class="ss">${p.sg}</div>
-    <div class="gz">${wx(p.gz[0])}<br>${wx(p.gz[1])}</div><div class="ny">${p.ny}</div></div>`).join("");
+    <div class="gz">${wx(p.gz[0])}<br>${wx(p.gz[1])}</div>${mode === "chart" && p.hg ? `<div class="hg">藏干 ${p.hg.join(" ")}</div>` : ""}<div class="ny">${p.ny}</div></div>`).join("");
   $("#facts").innerHTML = [
     `日主 ${r.dayMaster}`,
     r.strong ? "身強（喜食傷、財、官殺）" : "身弱（喜印、比劫）",
-    r.lack.length ? `五行缺 ${r.lack.join("、")}` : "五行俱全"
+    r.lack.length ? `五行缺 ${r.lack.join("、")}` : "五行俱全",
+    ...(mode === "chart" && r.mhk ? [`馬 ${r.mhk.馬}・花 ${r.mhk.花}・庫 ${r.mhk.庫}`] : [])
   ].map(x => `<li>${x}</li>`).join("");
   const max = Math.max(...Object.values(r.wuxing), 1);
   $("#wxbar").innerHTML = Object.entries(r.wuxing).map(([k, v]) =>
     `<div class="wx-${k}"><i style="opacity:${v ? .25 + .75 * v / max : .12}"></i>${k} ${v}</div>`).join("");
+
+  const showChart = mode === "chart" && !!r.personality;
+  $("#chartCard").hidden = !showChart;
+  $("#fortuneCard").hidden = mode === "chart";
+  $("#switchMode").textContent = MODES[mode].switchTo;
+  if (showChart) {
+    const p = r.personality;
+    $("#pTitle").textContent = p.title;
+    $("#pGood").textContent = p.good;
+    $("#pCare").textContent = p.care;
+    $("#pTrait").textContent = p.strength + p.mhk;
+  }
+  $("#cta").textContent = r.cta || "";
+  $("#cta").hidden = !r.cta;
+  $("#form").hidden = true; $("#result").hidden = false;
+  window.scrollTo({ top: 0, behavior: "smooth" });
+  if (mode === "chart") return;
 
   const m = r.month;
   showMonth(m);
@@ -385,10 +463,6 @@ function render(r) {
     chips($("#dGood"), m.days.good);
     chips($("#dCaution"), m.days.caution);
   }
-  $("#cta").textContent = r.cta || "";
-  $("#cta").hidden = !r.cta;
-  $("#form").hidden = true; $("#result").hidden = false;
-  window.scrollTo({ top: 0, behavior: "smooth" });
 }
 $("#again").addEventListener("click", () => {
   $("#result").hidden = true; $("#form").hidden = false; window.scrollTo({ top: 0, behavior: "smooth" });
