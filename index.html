@@ -47,6 +47,7 @@ select{appearance:none;cursor:pointer;padding-right:36px;
 select:invalid{color:var(--muted)}
 input:focus,select:focus,textarea:focus{outline:2px solid var(--accent);outline-offset:1px;border-color:transparent}
 textarea{resize:vertical;min-height:70px}
+#gLabel{font-size:14px;font-weight:500}
 .seg{display:flex;border:1px solid var(--line);border-radius:10px;overflow:hidden;min-height:44px}
 .seg label{flex:1;display:flex;align-items:center;justify-content:center;cursor:pointer;background:var(--bg)}
 .seg input{position:absolute;opacity:0;pointer-events:none}
@@ -263,8 +264,8 @@ a.btn.ghost{border:1px solid var(--line);color:var(--ink);flex:none;font-size:14
   <div class="card ig">
     <span class="ig-icon" aria-hidden="true"></span>
     <div>
-      <b>追蹤緣來Ru's</b>
-      <p>到 Instagram 搜尋「<strong>緣來Ru's</strong>」（@rebecca.slow1992），每月運勢分享不漏接</p>
+      <b>追蹤緣來Ru's工作室(@rubazi_1992)</b>
+      <p>到 Instagram 搜尋「<strong>rubazi_1992</strong>」，每月運勢分享不漏接</p>
     </div>
     <a class="btn ghost" id="igLink" target="_blank" rel="noopener" hidden>前往 IG</a>
   </div>
@@ -276,7 +277,7 @@ a.btn.ghost{border:1px solid var(--line);color:var(--ink);flex:none;font-size:14
 // ===== 工作室設定：貼上網址後，對應的按鈕才會出現 =====
 const CONFIG = {
   formUrl: "https://forms.gle/M8iLMBoGWPekY2xk9",   // Google 表單報名網址
-  igUrl: "https://www.instagram.com/rebecca.slow1992/",   // IG 帳號網址
+  igUrl: "https://www.instagram.com/rubazi_1992/",   // IG 帳號網址
   // Apps Script 正式網址：網頁放在 GitHub Pages 時，透過它排盤並寫入試算表（用 Node 伺服器時改成 ""）
   apiUrl: "https://script.google.com/macros/s/AKfycby8Ett4sUUpiqhj-Krhntv-tkeqReIr-TNk0HFcBfaW56MnCFB4ZNdZfiDVzmZMFutk/exec"
 };
