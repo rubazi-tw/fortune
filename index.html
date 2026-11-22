@@ -39,6 +39,7 @@ h2{font-family:"Noto Serif TC",serif;font-size:20px;margin:0 0 4px}
 .full{grid-column:1/-1}
 label.f{display:flex;flex-direction:column;gap:6px;font-size:14px;font-weight:500}
 label.f em{font-style:normal;color:var(--fire)}
+.field-note{font-size:12.5px;font-weight:400;color:var(--muted);line-height:1.5}
 input[type=text],select,textarea{
   font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px 12px;width:100%;min-height:44px}
 select{appearance:none;cursor:pointer;padding-right:36px;
@@ -188,7 +189,7 @@ a.btn.ghost{border:1px solid var(--line);color:var(--ink);flex:none;font-size:14
       <label class="f"><span>出生時辰 <em>*</em></span>
         <select name="hour" required>
           <option value="" selected disabled>請選擇時辰</option>
-          <option value="unknown">不知道時辰</option>
+          <option value="unknown">吉時（不知道出生時辰）</option>
           <option value="23:30">子時（早子）23:00–00:00</option>
           <option value="00:30">子時（晚子）00:00–01:00</option>
           <option value="02:00">丑時 01:00–03:00</option>
@@ -203,6 +204,7 @@ a.btn.ghost{border:1px solid var(--line);color:var(--ink);flex:none;font-size:14
           <option value="20:00">戌時 19:00–21:00</option>
           <option value="22:00">亥時 21:00–23:00</option>
         </select>
+        <small class="field-note">※ 不知道出生時辰，請選「吉時」，以年、月、日三柱分析。</small>
       </label>
       <p class="privacy full">台灣於 1945–1979 年間部分年份實施夏令時間，若出生於該期間，請先將出生時間減 1 小時再選時辰。</p>
       <label class="chk full"><input type="checkbox" name="consent">
@@ -397,7 +399,7 @@ $("#form").addEventListener("submit", e => {
     consent: f.get("consent") === "on"
   };
   if (!body.date) return err.textContent = "請依 YYYY/MM/DD 格式輸入正確的出生年月日，例如 1990/05/15";
-  if (!hour) return err.textContent = "請選擇出生時辰（不清楚可選「不知道時辰」）";
+  if (!hour) return err.textContent = "請選擇出生時辰（不清楚可選「吉時」）";
   if (!body.consent) return err.textContent = "請勾選同意聲明";
   query(body);
 });
