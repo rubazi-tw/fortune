@@ -116,17 +116,12 @@ footer{text-align:center;color:var(--muted);font-size:12.5px;margin-top:28px}
 a.btn.primary{background:var(--accent);color:var(--accent-ink);letter-spacing:.15em;margin-top:16px}
 a.btn.ghost{border:1px solid var(--line);color:var(--ink);flex:none;font-size:14px}
 .promo{border-color:var(--gold)}
-.book{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 16px;border:1px solid var(--gold);
-  border-radius:14px;background:var(--paper);color:var(--ink);text-decoration:none}
-.book b{display:block;font-family:"Noto Serif TC",serif;color:var(--accent);font-size:16.5px}
-.book small{font-size:13px;color:var(--muted)}
-.book small span{display:block;white-space:nowrap}
-.book-go{flex:none;background:var(--accent);color:var(--accent-ink);font-weight:700;border-radius:10px;padding:9px 14px;font-size:14.5px}
-/* 查詢結果頁下方已有完整的報名方案，首頁的預約列就收起來 */
-.wrap:has(#result:not([hidden])) .book{display:none}
+/* 個人化的報名提醒只跟著查詢結果出現 */
+.wrap:has(#result[hidden]) #cta{display:none}
 .prices{list-style:none;margin:0;padding:0}
 .prices li{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--line)}
 .prices li:last-child{border-bottom:0}
+.prices li.combo{background:var(--gold-soft);border-radius:12px;padding:12px 14px;margin-top:8px}
 .prices b{display:block;font-family:"Noto Serif TC",serif;color:var(--accent)}
 .prices span{font-size:13.5px;color:var(--muted)}
 .prices strong{font-family:"Noto Serif TC",serif;font-size:20px;white-space:nowrap}
@@ -157,11 +152,6 @@ a.btn.ghost{border:1px solid var(--line);color:var(--ink);flex:none;font-size:14
       <span id="mRange">載入中…</span>
     </div>
   </header>
-
-  <a class="book no-print" id="bookLink" target="_blank" rel="noopener" hidden>
-    <span><b>一對一批命盤・流年詳批</b><small><span>命盤＋流年 2,800 元</span><span>流年 1,200 元</span></small></span>
-    <span class="book-go">預約批命盤</span>
-  </a>
 
   <div class="modes no-print" role="group" aria-label="選擇查詢項目">
     <button type="button" class="mode-btn" data-mode="month" aria-pressed="true"><b>本月流月運勢</b><span>事業、財運、感情、健康與開運提醒</span></button>
@@ -264,17 +254,20 @@ a.btn.ghost{border:1px solid var(--line);color:var(--ink);flex:none;font-size:14
 
     <button class="switch no-print" id="switchMode" type="button"></button>
 
-    <div class="card promo">
-      <h2>想看完整的流年運勢？</h2>
-      <p class="cta" id="cta"></p>
-      <p class="hint">由緣來Ru's 一對一詳批，有任何問題歡迎諮詢。</p>
-      <ul class="prices">
-        <li><div><b>命盤＋流年（首次排盤）</b><span>命盤分析 1,600 元 ＋ 流年運勢 1,200 元</span></div><strong>2,800 元</strong></li>
-        <li><div><b>流年運勢（舊雨新知）</b><span>已排過命盤者</span></div><strong>1,200 元</strong></li>
-      </ul>
-      <a class="btn primary" id="formLink" target="_blank" rel="noopener" hidden>填寫報名表單</a>
-    </div>
   </section>
+
+  <div class="card promo" id="plans">
+    <h2>一對一諮詢方案</h2>
+    <p class="cta" id="cta" hidden></p>
+    <p class="hint">由緣來Ru's 一對一詳批，有任何問題歡迎諮詢。</p>
+    <ul class="prices">
+      <li><div><b>單一問題諮詢（約 30 分鐘）</b><span>只想問一件事</span></div><strong>600 元</strong></li>
+      <li><div><b>命盤地圖</b><span>首次排盤／看懂自己</span></div><strong>1,600 元</strong></li>
+      <li><div><b>2027 流年導航</b><span>舊雨新知／全年可問</span></div><strong>1,200 元</strong></li>
+      <li class="combo"><div><b>命盤地圖＋2027 流年導航</b><span>排盤流年／全年可問</span></div><strong>2,800 元</strong></li>
+    </ul>
+    <a class="btn primary" id="formLink" target="_blank" rel="noopener" hidden>填寫報名表單</a>
+  </div>
 
   <div class="card ig">
     <span class="ig-icon" aria-hidden="true"></span>
@@ -298,7 +291,7 @@ const CONFIG = {
 };
 // =====================================================
 const $ = s => document.querySelector(s);
-if (CONFIG.formUrl) for (const id of ["#formLink", "#bookLink"]) Object.assign($(id), { href: CONFIG.formUrl, hidden: false });
+if (CONFIG.formUrl) Object.assign($("#formLink"), { href: CONFIG.formUrl, hidden: false });
 if (CONFIG.igUrl) Object.assign($("#igLink"), { href: CONFIG.igUrl, hidden: false });
 const MONTH_CN = "正二三四五六七八九十冬臘";
 const ZHI = "子丑寅卯辰巳午未申酉戌亥";
